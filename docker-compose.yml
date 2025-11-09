@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  mysql-db:
+    image: mysql:8
+    container_name: mysql-local
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: mydogs_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+
+  app:
+    build: .
+    container_name: dogs-app
+    restart: always
+    depends_on:
+      - mysql-db
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: local
+      PORT: 3000
+      DB_HOST: mysql-db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASS: pass
+      DB_NAME: mydogs_db
+
+volumes:
+  mysql_data:

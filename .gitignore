@@ -1,0 +1,44 @@
+# --- Node ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+.cache/
+
+# --- Environment variables ---
+.env
+.env.*
+!.env.example   # permite subir solo el archivo de ejemplo sin credenciales
+
+# --- Docker ---
+docker-compose.override.yml
+**/docker-compose-override.yml
+*.pid
+*.log
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- System files ---
+.DS_Store
+Thumbs.db
+
+# --- SSH Keys / Credentials ---
+*.pem
+*.key
+*.crt
+*.p12
+
+# --- Output / Temp ---
+tmp/
+logs/
+coverage/
+
+# --- GitHub Actions Cache ---
+/.github/actions/cache/

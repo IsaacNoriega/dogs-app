@@ -1,0 +1,105 @@
+name: CI/CD pipeline
+
+on:
+  push:
+    branches: [main, master]
+
+env:
+  IMAGE_NAME: ${{ secrets.IMAGE_NAME }} # ejemplo: 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-dogs-app
+
+jobs:
+  build:
+    name: Build (installar dependencias y validar)
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.set_tag.outputs.image_tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run simple lint/test (placeholder)
+        run: echo "No tests - Build ok"
+
+      - name: Set image tag
+        id: set_tag
+        run: |
+          TAG=${GITHUB_SHA::7}
+          echo "image_tag=$TAG" >> $GITHUB_OUTPUT
+
+  docker-build-and-push:
+    name: Docker build & push
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+      - name: Build Docker image
+        run: |
+          IMAGE=${{ env.IMAGE_NAME }}
+          TAG=${{ needs.build.outputs.image_tag }}
+          docker build -t $IMAGE:$TAG .
+          docker tag $IMAGE:$TAG $IMAGE:latest
+
+      - name: Push images to ECR
+        run: |
+          IMAGE=${{ env.IMAGE_NAME }}
+          TAG=${{ needs.build.outputs.image_tag }}
+          docker push $IMAGE:$TAG
+          docker push $IMAGE:latest
+
+  deploy:
+    name: Deploy to EC2
+    needs: docker-build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Wait for image tag
+        run: echo "Deploying"
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_SSH_PORT || 22 }}
+          script: |
+            set -e
+            IMAGE=${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image_tag }}
+            # Log in to ECR on EC2 (necesario si EC2 no tiene los creds)
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+            # Para detener y remover contenedor existente si existiera
+            docker rm -f my-dogs-app || true
+            # Pull nueva imagen y correr
+            docker pull $IMAGE
+            docker run -d --name my-dogs-app -p 80:3000 \
+              -e NODE_ENV=prod \
+              -e DB_HOST="${{ secrets.PROD_DB_HOST }}" \
+              -e DB_PORT="${{ secrets.PROD_DB_PORT }}" \
+              -e DB_USER="${{ secrets.PROD_DB_USER }}" \
+              -e DB_PASS="${{ secrets.PROD_DB_PASS }}" \
+              -e DB_NAME="${{ secrets.PROD_DB_NAME }}" \
+              $IMAGE
