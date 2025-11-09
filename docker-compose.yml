@@ -5,9 +5,11 @@ services:
     image: mysql:8
     container_name: mysql-local
     restart: always
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: pass
-      MYSQL_DATABASE: mydogs_db
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
     ports:
       - "3306:3306"
     volumes:
@@ -20,16 +22,18 @@ services:
     restart: always
     depends_on:
       - mysql-db
-    ports:
-      - "3000:3000"
+    env_file:
+      - .env
     environment:
-      NODE_ENV: local
+      NODE_ENV: ${NODE_ENV}
       PORT: 3000
       DB_HOST: mysql-db
-      DB_PORT: 3306
-      DB_USER: root
-      DB_PASS: pass
-      DB_NAME: mydogs_db
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+    ports:
+      - "3000:3000"
 
 volumes:
   mysql_data:

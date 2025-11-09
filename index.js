@@ -1,5 +1,5 @@
 const express = require('express');
-require('dotenv').config({ path: '.env.local' });
+require('dotenv').config({ path: '.env' });
 const dogsRouter = require('./routes/dogs');
 
 const app = express();
