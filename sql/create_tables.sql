@@ -7,6 +7,7 @@ CREATE TABLE
         raza VARCHAR(100),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+    
 
 -- Para producción
 CREATE TABLE
