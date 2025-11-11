@@ -86,7 +86,6 @@ jobs:
           script: |
             set -e
 
-            # Definir variables correctamente
             IMAGE_NAME="${{ secrets.IMAGE_NAME }}"
             IMAGE_TAG="${{ needs.docker-build-and-push.outputs.image_tag }}"
             IMAGE="$IMAGE_NAME:$IMAGE_TAG"
@@ -100,10 +99,10 @@ jobs:
             # Borrar contenedor anterior si existe
             docker rm -f my-dogs-app || true
 
-            # Descargar la imagen
+            # Descargar la imagen usando el tag específico
             docker pull $IMAGE
 
-            # Ejecutar contenedor nuevo
+            # Ejecutar contenedor nuevo con el mismo tag
             docker run -d --name my-dogs-app -p 80:3000 \
               -e NODE_ENV=prod \
               -e DB_HOST="${{ secrets.PROD_DB_HOST }}" \
