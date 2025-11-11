@@ -1,4 +1,5 @@
 -- Para local
+
 CREATE TABLE
     IF NOT EXISTS perros_local (
         id INT AUTO_INCREMENT PRIMARY KEY,
