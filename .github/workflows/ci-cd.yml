@@ -82,7 +82,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_SSH_PORT }}
-          envs: 
+          envs:
             IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
           script: |
             set -e
