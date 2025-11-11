@@ -4,6 +4,7 @@ const {
     DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME, NODE_ENV
 } = process.env;
 
+
 async function getConnection() {
     try {
         const connection = await mysql.createConnection({
