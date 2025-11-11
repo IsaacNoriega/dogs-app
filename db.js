@@ -2,6 +2,7 @@ const mysql = require('mysql2/promise');
 
 const { NODE_ENV } = process.env;
 
+
 // Configuraciones para cada entorno
 const DB_CONFIG = {
   local: {
