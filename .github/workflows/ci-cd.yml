@@ -9,7 +9,7 @@ env:
 
 jobs:
   build:
-    name: Build (installar dependencias y validar)
+    name: Build (instalar dependencias y validar)
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.set_tag.outputs.image_tag }}
@@ -47,6 +47,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # <-- necesario para labs
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -76,9 +77,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Wait for image tag
-        run: echo "Deploying"
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -89,12 +87,13 @@ jobs:
           script: |
             set -e
             IMAGE=${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image_tag }}
-            # Log in to ECR on EC2 (necesario si EC2 no tiene los creds)
+
+            # Login to ECR from EC2
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-            # Para detener y remover contenedor existente si existiera
+
             docker rm -f my-dogs-app || true
-            # Pull nueva imagen y correr
             docker pull $IMAGE
+
             docker run -d --name my-dogs-app -p 80:3000 \
               -e NODE_ENV=prod \
               -e DB_HOST="${{ secrets.PROD_DB_HOST }}" \
