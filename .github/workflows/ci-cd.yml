@@ -105,9 +105,9 @@ jobs:
             # Ejecutar contenedor nuevo con el mismo tag
             docker run -d --name my-dogs-app -p 80:3000 \
               -e NODE_ENV=prod \
-              -e DB_HOST="${{ secrets.PROD_DB_HOST }}" \
-              -e DB_PORT="${{ secrets.PROD_DB_PORT }}" \
-              -e DB_USER="${{ secrets.PROD_DB_USER }}" \
-              -e DB_PASS="${{ secrets.PROD_DB_PASS }}" \
-              -e DB_NAME="${{ secrets.PROD_DB_NAME }}" \
+              -e PROD_DB_HOST="${{ secrets.PROD_DB_HOST }}" \
+              -e PROD_DB_PORT="${{ secrets.PROD_DB_PORT }}" \
+              -e PROD_DB_USER="${{ secrets.PROD_DB_USER }}" \
+              -e PROD_DB_PASS="${{ secrets.PROD_DB_PASS }}" \
+              -e PROD_DB_NAME="${{ secrets.PROD_DB_NAME }}" \
               $IMAGE
