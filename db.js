@@ -10,7 +10,7 @@ const DB_CONFIG = {
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
-
+  },
   prod: {
     host: process.env.PROD_DB_HOST,
     port: process.env.PROD_DB_PORT || 3306,
