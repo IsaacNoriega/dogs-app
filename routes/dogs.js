@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { getConnection, NODE_ENV } = require('../db');
 
-
 // 👈 Esta función decide qué tabla se usa según el entorno
 function tableName() {
     return `perros_${NODE_ENV === 'prod' ? 'prod' : 'local'}`;
