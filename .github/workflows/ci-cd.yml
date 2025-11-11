@@ -5,7 +5,7 @@ on:
     branches: [main, master]
 
 env:
-  IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+  IMAGE_NAME: ${{ secrets.IMAGE_NAME }} # ejemplo: 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-dogs-app
 
 jobs:
   build:
@@ -80,13 +80,13 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.EC2_SSH_PORT || 22 }}
-          env:
-            IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
+          port: ${{ secrets.EC2_SSH_PORT }}
           script: |
             set -e
 
+            # Definir variables correctamente
             IMAGE_NAME="${{ secrets.IMAGE_NAME }}"
+            IMAGE_TAG="${{ needs.build.outputs.image_tag }}"
             IMAGE="$IMAGE_NAME:$IMAGE_TAG"
 
             echo "Deploying image $IMAGE"
