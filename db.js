@@ -20,7 +20,6 @@ const DB_CONFIG = {
 };
 
 async function getConnection() {
-  // Elegimos la configuración según el entorno
   const config = NODE_ENV === 'prod' ? DB_CONFIG.prod : DB_CONFIG.local;
 
   try {

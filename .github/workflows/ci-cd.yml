@@ -5,7 +5,7 @@ on:
     branches: [main, master]
 
 env:
-  IMAGE_NAME: ${{ secrets.IMAGE_NAME }} # ejemplo: 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-dogs-app
+  IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
 
 jobs:
   build:

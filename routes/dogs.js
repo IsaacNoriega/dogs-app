@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { getConnection, NODE_ENV } = require('../db');
 
-// 👈 Esta función decide qué tabla se usa según el entorno
+
 function tableName() {
     return `perros_${NODE_ENV === 'prod' ? 'prod' : 'local'}`;
 }
 
-// Obtener todos los registros
+// GET registros de perros pa
 router.get('/', async (req, res) => {
     let conn;
     try {
@@ -15,14 +15,14 @@ router.get('/', async (req, res) => {
         const [rows] = await conn.execute(`SELECT * FROM ${tableName()}`);
         res.json(rows);
     } catch (error) {
-        console.error('❌ Error GET /dogs:', error);
+        console.error('Error GET', error);
         res.status(500).json({ error: error.message });
     } finally {
         if (conn) conn.end();
     }
 });
 
-// Obtener registro por ID
+// GET pero por id
 router.get('/:id', async (req, res) => {
     let conn;
     try {
@@ -33,14 +33,14 @@ router.get('/:id', async (req, res) => {
         );
         res.json(rows[0] || null);
     } catch (error) {
-        console.error('❌ Error GET /dogs/:id:', error);
+        console.error('Error GET por ID', error);
         res.status(500).json({ error: error.message });
     } finally {
         if (conn) conn.end();
     }
 });
 
-// Crear un registro
+// Crear un registro de doggy
 router.post('/', async (req, res) => {
     const { nombre, edad, raza } = req.body;
     let conn;
@@ -52,14 +52,14 @@ router.post('/', async (req, res) => {
         );
         res.json({ id: result.insertId });
     } catch (error) {
-        console.error('❌ Error POST /dogs:', error);
+        console.error('Error POST:', error);
         res.status(500).json({ error: error.message });
     } finally {
         if (conn) conn.end();
     }
 });
 
-// Actualizar un registro
+// PUT
 router.put('/:id', async (req, res) => {
     const { nombre, edad, raza } = req.body;
     let conn;
@@ -71,14 +71,14 @@ router.put('/:id', async (req, res) => {
         );
         res.json({ ok: true });
     } catch (error) {
-        console.error('❌ Error PUT /dogs/:id:', error);
+        console.error('Error PUT /dogs/:id:', error);
         res.status(500).json({ error: error.message });
     } finally {
         if (conn) conn.end();
     }
 });
 
-// Eliminar un registro
+// DLETE
 router.delete('/:id', async (req, res) => {
     let conn;
     try {
@@ -88,7 +88,7 @@ router.delete('/:id', async (req, res) => {
         ]);
         res.json({ ok: true });
     } catch (error) {
-        console.error('❌ Error DELETE /dogs/:id:', error);
+        console.error('Error DELETE /dogs/:id:', error);
         res.status(500).json({ error: error.message });
     } finally {
         if (conn) conn.end();

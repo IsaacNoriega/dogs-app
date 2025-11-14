@@ -5,7 +5,6 @@ const dogsRouter = require('./routes/dogs');
 const app = express();
 app.use(express.json());
 
-// health
 app.get('/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));
 
 app.use('/dogs', dogsRouter);
