@@ -20,12 +20,12 @@ router.get('/', async (req, res) => {
         console.error('Error GET', error);
         res.status(500).json({ error: error.message });
     } finally {
-        
+
         if (conn) conn.end();
     }
 });
 
-// GET pero por id
+// GET pero por id 
 router.get('/:id', async (req, res) => {
     let conn;
     try {
